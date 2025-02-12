@@ -673,6 +673,7 @@ int SessionAlsaVoice::setTaggedSlotMask(Stream * s)
     return status;
 }
 
+#ifdef VCPM_CAL_KEY_ID_NUM_CHANNELS
 int SessionAlsaVoice::setVoiceCKVS(Stream * s)
 {
     int status = 0;
@@ -738,6 +739,7 @@ if (paramData) {
 }
     return status;
 }
+#endif
 
 int SessionAlsaVoice::start(Stream * s)
 {
@@ -885,12 +887,14 @@ int SessionAlsaVoice::start(Stream * s)
         goto err_pcm_open;
     }
 
+#ifdef VCPM_CAL_KEY_ID_NUM_CHANNELS
     /* set CKV's to configure voice call*/
     status = setVoiceCKVS(s);
     if (status != 0) {
         PAL_ERR(LOG_TAG,"setVoiceCKVS failed");
         goto err_pcm_open;
     }
+#endif
 
     if (ResourceManager::isLpiLoggingEnabled()) {
         status = payloadTaged(s, MODULE, LPI_LOGGING_ON, pcmDevTxIds.at(0), TX_HOSTLESS);
@@ -926,6 +930,7 @@ int SessionAlsaVoice::start(Stream * s)
         }
     }
 
+#ifdef EVENT_ID_MIC_OCCLUSION_STATUS_INFO
     if (!status && isMixerEventCbRegd) {
         // Register for callback for Mic Occlusion Notification
         size_t payload_size = 0;
@@ -954,6 +959,7 @@ int SessionAlsaVoice::start(Stream * s)
             status = 0;
         }
     }
+#endif
 
     status = 0;
     goto exit;
@@ -1034,6 +1040,7 @@ int SessionAlsaVoice::stop(Stream * s)
 
     rm->voteSleepMonitor(s, false);
 
+#ifdef EVENT_ID_MIC_OCCLUSION_STATUS_INFO
     // Deregister for callback for Mic Occlusion
     if (!status && isMicOcclusionRegistrationDone) {
         payload_size = sizeof(struct agm_event_reg_cfg);
@@ -1056,6 +1063,7 @@ int SessionAlsaVoice::stop(Stream * s)
         isMicOcclusionRegistrationDone = false;
         rm->removeMicOcclusionInfo(s);
     }
+#endif
 
 exit:
     PAL_DBG(LOG_TAG,"Exit ret: %d", status);
@@ -1662,6 +1670,7 @@ exit:
     return status;
 }
 
+#ifdef VCPM_CAL_KEY_ID_NUM_CHANNELS
 int SessionAlsaVoice::payloadCKVs(uint8_t **payload, size_t *size, uint32_t channels)
 {
     int status = 0;
@@ -1708,6 +1717,7 @@ int SessionAlsaVoice::payloadCKVs(uint8_t **payload, size_t *size, uint32_t chan
 
     return status;
 }
+#endif
 
 int SessionAlsaVoice::payloadSetTTYMode(uint8_t **payload, size_t *size, uint32_t mode){
     int status = 0;
@@ -1848,6 +1858,7 @@ int SessionAlsaVoice::disconnectSessionDevice(Stream *streamHandle,
                 }
             }
         }
+#ifdef EVENT_ID_MIC_OCCLUSION_STATUS_INFO
         // Deregister for callback for Mic Occlusion
         if (!status && isMicOcclusionRegistrationDone) {
             payload_size = sizeof(struct agm_event_reg_cfg);
@@ -1869,6 +1880,7 @@ int SessionAlsaVoice::disconnectSessionDevice(Stream *streamHandle,
             isMicOcclusionRegistrationDone = false;
             rm->removeMicOcclusionInfo(streamHandle);
         }
+#endif
 disconnect:
     status =  SessionAlsaUtils::disconnectSessionDevice(streamHandle,
                                                             streamType, rm,
@@ -1979,6 +1991,7 @@ int SessionAlsaVoice::connectSessionDevice(Stream* streamHandle,
             PAL_ERR(LOG_TAG,"connectSessionDevice on TX Failed");
         }
 
+#ifdef EVENT_ID_MIC_OCCLUSION_STATUS_INFO
         if (!status && isMixerEventCbRegd) {
             // Register for callback for Mic Occlusion Notification
             size_t payload_size = 0;
@@ -2007,6 +2020,7 @@ int SessionAlsaVoice::connectSessionDevice(Stream* streamHandle,
                 status = 0;
             }
         }
+#endif
 
 sidetone:
         if(sideTone_cnt == 0) {
@@ -2027,11 +2041,13 @@ sidetone:
         }
     }
 
+#ifdef VCPM_CAL_KEY_ID_NUM_CHANNELS
     /* set and fire CKV's to configure voice call in device switch*/
     status = setVoiceCKVS(streamHandle);
     if (status != 0) {
         PAL_ERR(LOG_TAG,"setVoiceCKVS failed in connectsession");
     }
+#endif
     return status;
 }
 

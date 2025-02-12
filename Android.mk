@@ -8,6 +8,10 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE                := libarpal_headers
 LOCAL_VENDOR_MODULE         := true
+
+LOCAL_EXPORT_HEADER_LIBRARY_HEADERS := \
+    libarosal_headers
+
 LOCAL_EXPORT_C_INCLUDE_DIRS := \
     $(LOCAL_PATH) \
     $(LOCAL_PATH)/stream/inc \
@@ -20,8 +24,6 @@ LOCAL_EXPORT_C_INCLUDE_DIRS := \
 
 include $(BUILD_HEADER_LIBRARY)
 
-ifneq ($(QCPATH),)
-
 include $(CLEAR_VARS)
 
 LOCAL_MODULE        := libar-pal
@@ -29,12 +31,20 @@ LOCAL_MODULE_OWNER  := qti
 LOCAL_MODULE_TAGS   := optional
 LOCAL_VENDOR_MODULE := true
 
+ifeq ($(SOONG_CONFIG_android_hardware_audio_run_64bit), true)
+LOCAL_MULTILIB := 64
+endif
+
 LOCAL_CFLAGS        := -D_ANDROID_
 LOCAL_CFLAGS        += -Wno-macro-redefined
 LOCAL_CFLAGS        += -Wall -Werror -Wno-unused-variable -Wno-unused-parameter
 LOCAL_CFLAGS        += -DCONFIG_GSL
 LOCAL_CFLAGS        += -D_GNU_SOURCE
+ifneq ($(TARGET_PAL_SPKR_PROTECTION_PATH),)
+LOCAL_CFLAGS        += -DPAL_SP_TEMP_PATH=\"$(TARGET_PAL_SPKR_PROTECTION_PATH)\"
+else
 LOCAL_CFLAGS        += -DPAL_SP_TEMP_PATH=\"/data/vendor/audio/audio.cal\"
+endif
 LOCAL_CFLAGS        += -DACD_SM_FILEPATH=\"/vendor/etc/models/acd/\"
 LOCAL_CPPFLAGS      += -fexceptions -frtti
 
@@ -49,7 +59,7 @@ ifneq ($(TARGET_KERNEL_VERSION), 4.4)
 ifneq ($(TARGET_KERNEL_VERSION), 4.9)
 ifneq ($(TARGET_KERNEL_VERSION), 5.4)
 LOCAL_CFLAGS        += -DADSP_SLEEP_MONITOR
-LOCAL_C_INCLUDES += $(TOP)/kernel_platform/msm-kernel/include/uapi/misc
+LOCAL_HEADER_LIBRARIES += generated_kernel_headers
 endif
 endif
 endif
@@ -156,8 +166,6 @@ LOCAL_SHARED_LIBRARIES += libtinyalsa libtinycompress
 endif
 
 include $(BUILD_SHARED_LIBRARY)
-
-endif
 
 #-------------------------------------------
 #            Build CHARGER_LISTENER LIB

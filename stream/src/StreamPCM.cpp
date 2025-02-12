@@ -33,6 +33,7 @@
 
 #include "StreamPCM.h"
 #include "Session.h"
+#include "kvh2xml.h"
 #include "SessionAlsaPcm.h"
 #include "ResourceManager.h"
 #include "Device.h"
@@ -55,10 +56,12 @@ void StreamPCM::handleSessionCallBack(uint64_t hdl, uint32_t event_id,
         }
     }
 
+#ifdef EVENT_ID_MIC_OCCLUSION_STATUS_INFO
     if (event_id == EVENT_ID_MIC_OCCLUSION_STATUS_INFO) {
         PAL_DBG(LOG_TAG,"LOG_AS: Mic Occlusion info received");
         rm->updateMicOcclusionInfo(s, data);
      }
+#endif
 }
 
 StreamPCM::StreamPCM(const struct pal_stream_attributes *sattr, struct pal_device *dattr,
@@ -128,6 +131,8 @@ StreamPCM::StreamPCM(const struct pal_stream_attributes *sattr, struct pal_devic
         mStreamMutex.unlock();
         throw std::runtime_error("failed to malloc for stream attributes");
     }
+
+    ar_mem_cpy(mStreamAttr, sizeof(pal_stream_attributes), sattr, sizeof(pal_stream_attributes));
 
     if (mStreamAttr->in_media_config.ch_info.channels > PAL_MAX_CHANNELS_SUPPORTED) {
         PAL_ERR(LOG_TAG,"in_channels is invalid %d", in_channels);

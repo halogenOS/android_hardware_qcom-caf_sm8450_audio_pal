@@ -38,6 +38,7 @@
 #include "SessionAlsaPcm.h"
 #include "ResourceManager.h"
 #include "Device.h"
+#include "us_detect_api.h"
 #include <unistd.h>
 
 StreamUltraSound::StreamUltraSound(const struct pal_stream_attributes *sattr __unused, struct pal_device *dattr __unused,

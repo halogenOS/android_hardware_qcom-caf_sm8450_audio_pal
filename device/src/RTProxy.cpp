@@ -32,6 +32,7 @@
 #include "RTProxy.h"
 #include "ResourceManager.h"
 #include "Device.h"
+#include "kvh2xml.h"
 
 #include "PayloadBuilder.h"
 #include "Stream.h"

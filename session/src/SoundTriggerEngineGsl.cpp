@@ -39,6 +39,7 @@
 #include "Stream.h"
 #include "StreamSoundTrigger.h"
 #include "ResourceManager.h"
+#include "kvh2xml.h"
 #include "SoundTriggerPlatformInfo.h"
 
 // TODO: find another way to print debug logs by default

@@ -38,6 +38,7 @@
 #include "ResourceManager.h"
 #include "PayloadBuilder.h"
 #include "Device.h"
+#include "kvh2xml.h"
 
 enum {
     EXT_DISPLAY_TYPE_NONE,
@@ -514,7 +515,7 @@ int32_t DisplayPort::setExtDisplayDevice(struct audio_mixer *mixer, int controll
         return -EINVAL;
     }
 
-    PAL_DBG(LOG_TAG,"controller/stream: %ld/%ld", deviceValues[0], deviceValues[1]);
+    PAL_DBG(LOG_TAG,"controller/stream: %d/%d", deviceValues[0], deviceValues[1]);
 
     return mixer_ctl_set_array(ctl, deviceValues, ARRAY_SIZE(deviceValues));
 }

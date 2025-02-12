@@ -37,6 +37,7 @@
 #include <PalApi.h>
 #include "ACDPlatformInfo.h"
 #include <PalCommon.h>
+#include "kvh2xml.h"
 
 enum PCM_DATA_EFFECT {
     PCM_DATA_EFFECT_RAW = 1,
